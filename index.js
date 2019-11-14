@@ -3,6 +3,15 @@ const path = require("path"); // Imported global path module
 const bodyParser = require("body-parser"); // imported module 'body-parser'
 
 const app = express(); // Create a instance of module
+const port = 3000;
+/*
+      Spreadsheet Config
+*/
+const GoogleSpreadsheet = require("google-spreadsheet");
+const credentials = require("./bugtracker.json");
+
+const docId = "1T-m0EQUv23WWcDcsF6eWOq8NVyhww-ZxTp16EiQ7KGg";
+const worksheetIndex = 0;
 
 // Configured views template for render webpage
 app.set("view engine", "ejs");
@@ -20,7 +29,25 @@ app.get("/", (req, res) => {
 
 // Send form data in method post
 app.post("/", (req, res) => {
-  res.send(req.body);
+  const doc = new GoogleSpreadsheet(docId);
+
+  doc.useServiceAccountAuth(credentials, err => {
+    if (err) {
+      console.log("Unable to open spreadsheet");
+    } else {
+      console.log("Spreadsheet opened");
+      doc.getInfo((err, info) => {
+        //   console.log(info);
+        const worksheet = info.worksheets[worksheetIndex];
+        worksheet.addRow(
+          { name: req.body.name, email: req.body.email },
+          err => {
+            res.send("Bug reported without errors");
+          }
+        );
+      });
+    }
+  });
 });
 
 // On get in the 'sum' address,
@@ -41,4 +68,10 @@ app.get("/sum", (req, res) => {
 });
 
 // Define the app 'listening' port
-app.listen(3000);
+app.listen(port, err => {
+  if (err) {
+    console.log("Unexpected error: ", err);
+  } else {
+    console.log(`Application running on port: ${port}`);
+  }
+});
