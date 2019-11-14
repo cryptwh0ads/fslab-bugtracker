@@ -1,11 +1,15 @@
-const express = require("express"); // Import module 'express'
-const path = require("path"); // Import global path module
+const express = require("express"); // Imported module 'express'
+const path = require("path"); // Imported global path module
+const bodyParser = require("body-parser"); // imported module 'body-parser'
+
 const app = express(); // Create a instance of module
 
-// Configure views template for render webpage
+// Configured views template for render webpage
 app.set("view engine", "ejs");
-// Define the root dir to search templates
+// Defined the root dir to search templates
 app.set("views", path.resolve(__dirname, "views"));
+// Created middleware to accept all url data
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // On get in the root address,
 // the server response it will be 'Hello from API'
@@ -16,7 +20,7 @@ app.get("/", (req, res) => {
 
 // Send form data in method post
 app.post("/", (req, res) => {
-  res.send("Posted!");
+  res.send(req.body);
 });
 
 // On get in the 'sum' address,
