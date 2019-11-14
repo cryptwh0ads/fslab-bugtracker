@@ -14,6 +14,11 @@ app.get("/", (req, res) => {
   res.render("home");
 });
 
+// Send form data in method post
+app.post("/", (req, res) => {
+  res.send("Posted!");
+});
+
 // On get in the 'sum' address,
 // the server response with the sum of query params n1 and n2
 app.get("/sum", (req, res) => {
