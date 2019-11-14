@@ -1,5 +1,6 @@
 const express = require("express"); // Imported module 'express'
 const path = require("path"); // Imported global path module
+const { promisify } = require("util");
 const bodyParser = require("body-parser"); // imported module 'body-parser'
 
 const app = express(); // Create a instance of module
@@ -28,26 +29,23 @@ app.get("/", (req, res) => {
 });
 
 // Send form data in method post
-app.post("/", (req, res) => {
-  const doc = new GoogleSpreadsheet(docId);
+app.post("/", async (req, res) => {
+  try {
+    const doc = new GoogleSpreadsheet(docId);
 
-  doc.useServiceAccountAuth(credentials, err => {
-    if (err) {
-      console.log("Unable to open spreadsheet");
-    } else {
-      console.log("Spreadsheet opened");
-      doc.getInfo((err, info) => {
-        //   console.log(info);
-        const worksheet = info.worksheets[worksheetIndex];
-        worksheet.addRow(
-          { name: req.body.name, email: req.body.email },
-          err => {
-            res.send("Bug reported without errors");
-          }
-        );
-      });
-    }
-  });
+    await promisify(doc.useServiceAccountAuth)(credentials);
+    console.log("Spreadsheet opened");
+    const info = await promisify(doc.getInfo)();
+    const worksheet = info.worksheets[worksheetIndex];
+    await promisify(worksheet.addRow)({
+      name: req.body.name,
+      email: req.body.email
+    });
+    res.send("Bug reported without errors");
+  } catch (err) {
+    res.send("Unexpected error on send this report");
+    console.log(err);
+  }
 });
 
 // On get in the 'sum' address,
