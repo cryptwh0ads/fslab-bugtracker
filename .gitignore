@@ -1,6 +1,4 @@
-<<<<<<< HEAD
 .DS_STORE
-node_modules
 scripts/flow/*/.flowconfig
 *~
 *.pyc
@@ -34,6 +32,3 @@ packages/react-devtools-extensions/firefox/*.pem
 packages/react-devtools-extensions/shared/build
 packages/react-devtools-inline/dist
 packages/react-devtools-shell/dist
-=======
-node_modules/
->>>>>>> f1318aeae893596f298539d426c9f82133905afa
